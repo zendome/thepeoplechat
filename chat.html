@@ -1,0 +1,24 @@
+<!-- Save as: chat.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PeopleChat - Chat</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="topbar">
+    <span id="welcomeUser"></span>
+    <button onclick="logout()">Logout</button>
+    <button onclick="goBack()">Back to Home</button> <!-- Back Button -->
+  </div>
+
+  <h3>Chat with <span id="chatWithUser"></span></h3> <!-- Display chat partner's username -->
+
+  <div id="chatBox"></div> <!-- Message Box -->
+
+  <input id="msgText" placeholder="Your message">
+  <button onclick="sendMessage()">Send Message</button>
+
+  <script src="script.js"></script>
+</body>
+</html>
