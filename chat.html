@@ -1,0 +1,128 @@
+<!-- chat.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeopleChat - Chat</title>
+    <script src="script.js"></script>
+</head>
+<body>
+    <h2>📱 Chat - <span id="chatWithUser"></span></h2>
+    
+    <!-- Back Button -->
+    <button onclick="goBack()">Back</button>
+
+    <div id="chatBox" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto; margin-top: 20px;">
+        <!-- Chat messages will appear here -->
+    </div>
+
+    <div>
+        <input type="text" id="msgText" placeholder="Type your message" style="width: 80%; padding: 5px;">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        // Onload function to initialize chat
+        window.onload = function() {
+            showChat();  // Load chat content
+            startChatUpdate();  // Start periodic refresh for new messages
+        };
+
+        // Show chat history
+        function showChat() {
+            const chatWith = localStorage.getItem("currentChat");
+            if (!chatWith) {
+                alert("No user selected.");
+                window.location.href = "home.html";
+                return;
+            }
+
+            document.getElementById("chatWithUser").innerText = chatWith;
+
+            const chatBox = document.getElementById("chatBox");
+            chatBox.innerHTML = '';
+
+            const chatHistory = JSON.parse(localStorage.getItem("messages") || "{}")[chatWith] || [];
+            
+            // Sort messages by timestamp
+            const sortedMessages = [...chatHistory].sort((a, b) => (a.time || 0) - (b.time || 0));
+
+            sortedMessages.forEach(msg => {
+                const badge = JSON.parse(localStorage.getItem("badges") || "{}")[msg.from] || '';
+                const senderName = msg.from === localStorage.getItem("currentUser") ? "You" : msg.from;
+                const timeStr = msg.time ? formatTime(msg.time) : "";
+                chatBox.innerHTML += `
+                    <div>
+                        <strong>${senderName}</strong>
+                        <span style="color: gray; font-size: 11px;">${timeStr}</span>:
+                        ${msg.text}
+                        <span class="badge">${badge}</span>
+                    </div>
+                `;
+            });
+
+            scrollToBottom(); // Scroll to the latest message
+        }
+
+        // Send message function
+        function sendMessage() {
+            const to = localStorage.getItem("currentChat");
+            const text = document.getElementById("msgText").value.trim();
+
+            if (!to || !text) {
+                alert("Please enter both fields.");
+                return;
+            }
+
+            if (!JSON.parse(localStorage.getItem("users") || "{}")[to]) {
+                alert("User doesn't exist.");
+                return;
+            }
+
+            const timestamp = Date.now();
+
+            // Save the message for both the sender and receiver
+            const messages = JSON.parse(localStorage.getItem("messages") || "{}");
+
+            if (!messages[to]) messages[to] = [];
+            messages[to].push({ from: localStorage.getItem("currentUser"), text, time: timestamp });
+
+            if (!messages[localStorage.getItem("currentUser")]) messages[localStorage.getItem("currentUser")] = [];
+            messages[localStorage.getItem("currentUser")].push({ from: to, text, time: timestamp });
+
+            localStorage.setItem("messages", JSON.stringify(messages));
+
+            // Clear message input after sending
+            document.getElementById("msgText").value = '';
+            showChat();  // Refresh chat view to include new message
+        }
+
+        // Format message timestamp into readable time
+        function formatTime(ts) {
+            const date = new Date(ts);
+            return `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+        }
+
+        // Scroll to the bottom of the chat
+        function scrollToBottom() {
+            const chatBox = document.getElementById("chatBox");
+            if (chatBox) {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+
+        // Real-time chat update (refresh every 2 seconds)
+        function startChatUpdate() {
+            setInterval(() => {
+                showChat();  // Refresh chat every 2 seconds
+            }, 2000);
+        }
+
+        // Back button function (go back to home.html)
+        function goBack() {
+            window.location.href = "home.html";  // Go back to home page
+        }
+    </script>
+</body>
+</html>

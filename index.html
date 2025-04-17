@@ -1,0 +1,65 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PeopleChat - Login/Signup</title>
+  <script src="script.js"></script>
+</head>
+<body>
+  <h2>🔐 Welcome to PeopleChat</h2>
+
+  <!-- 🔒 Site-wide access password -->
+  <div id="lockScreen">
+    <input type="password" id="sitePassword" placeholder="Enter site password" />
+    <button onclick="checkSitePassword()">Enter</button>
+  </div>
+
+  <!-- 👤 Login/Signup Section (hidden at first) -->
+  <div id="authSection" style="display:none;">
+    <h3>Login</h3>
+    <input type="text" id="username" placeholder="Username"><br>
+    <input type="password" id="password" placeholder="Password"><br>
+    <button onclick="login()">Log In</button>
+    <hr>
+    <h3>Sign Up</h3>
+    <input type="text" id="usernameSignup" placeholder="New Username"><br>
+    <input type="password" id="passwordSignup" placeholder="New Password"><br>
+    <button onclick="signup()">Sign Up</button>
+  </div>
+
+  <script>
+    function checkSitePassword() {
+      const input = document.getElementById("sitePassword").value;
+      if (input === "PeopleChat11123") {
+        document.getElementById("lockScreen").style.display = "none";
+        document.getElementById("authSection").style.display = "block";
+      } else {
+        alert("Incorrect password");
+      }
+    }
+
+    function signup() {
+      const user = document.getElementById("usernameSignup").value;
+      const pass = document.getElementById("passwordSignup").value;
+      if (!user || !pass) return alert("Enter both fields.");
+      const users = JSON.parse(localStorage.getItem("users") || "{}");
+      if (users[user]) return alert("Username already exists.");
+      users[user] = { password: pass };
+      localStorage.setItem("users", JSON.stringify(users));
+      alert("Account created! Log in now.");
+    }
+
+    function login() {
+      const user = document.getElementById("username").value;
+      const pass = document.getElementById("password").value;
+      const users = JSON.parse(localStorage.getItem("users") || "{}");
+      if (!user || !pass) return alert("Enter both fields.");
+      if (!users[user] || users[user].password !== pass) {
+        return alert("Wrong username or password.");
+      }
+      localStorage.setItem("currentUser", user);
+      window.location.href = "home.html";
+    }
+  </script>
+</body>
+</html>
