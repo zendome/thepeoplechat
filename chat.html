@@ -67,14 +67,16 @@
 
         // Send message function
         function sendMessage() {
-            const to = localStorage.getItem("currentChat");
-            const text = document.getElementById("msgText").value.trim();
+            const to = localStorage.getItem("currentChat"); // Recipient from localStorage
+            const text = document.getElementById("msgText").value.trim(); // Message input field
 
+            // Check if both fields are filled
             if (!to || !text) {
                 alert("Please enter both fields.");
                 return;
             }
 
+            // Make sure the recipient exists in users
             if (!JSON.parse(localStorage.getItem("users") || "{}")[to]) {
                 alert("User doesn't exist.");
                 return;
